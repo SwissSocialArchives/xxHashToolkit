@@ -8,7 +8,7 @@ def readme():
         return f.read()
 
 
-setup(name='xxHashTool',
+setup(name='xxHashToolkit',
       version='1.0',
       description='xxhash toolkit for swiss social archives',
       url='',
@@ -18,7 +18,7 @@ setup(name='xxHashTool',
       package_dir={"": "validator"},
       entry_points={
           "console_scripts": [
-              "validate = validate:run",
+              "xx_validate = xx_validate:run",
           ],
       },
       python_requires='>3.5.2',
