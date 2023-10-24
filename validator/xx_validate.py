@@ -55,15 +55,6 @@ def run():
                     logger.error('Checksum file not found: ' + checksum_path)
                     valid = False
 
-    # for root, directories, filenames in os.walk(path):
-    #     for filename in filenames:
-    #         if root == path and filename == 'tagmanifest-md5.txt':
-    #             continue
-    #         path_and_filename = os.path.join(root, filename)
-    #         relative_file = path_and_filename[len(path) + 1:]
-    #         if relative_file not in checksums:
-    #             print('error', relative_file)
-
     logger.info(str(len(checksum)) + ' files tested')
     if valid:
         logger.info(f'{bcolors.SUCCESS}Checksum test is valid! 👍')
