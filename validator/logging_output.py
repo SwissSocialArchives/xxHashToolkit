@@ -1,7 +1,6 @@
 import logging
 import sys
-from archiver.colors import bcolors
-from archiver.definitions import get_config
+from validator.colors import bcolors
 import types
 
 
@@ -45,31 +44,30 @@ def log_newline(self):
 
 
 def logging_output(level=logging.INFO):
-    config = get_config()
-    video_archival = logging.getLogger('video_archival')
-    video_archival.setLevel(logging.INFO)
-    video_archival_stdout_handler = logging.StreamHandler(sys.stdout)
-    video_archival_stdout_handler.setLevel(level)
-    video_archival_stdout_handler.setFormatter(VideoArchivalLoggingFormatter())
+    xxHash = logging.getLogger('xxHash-logger')
+    xxHash.setLevel(logging.INFO)
+    xxHash_stdout_handler = logging.StreamHandler(sys.stdout)
+    xxHash_stdout_handler.setLevel(level)
+    xxHash_stdout_handler.setFormatter(VideoArchivalLoggingFormatter())
 
-    video_archival_file_handler = logging.FileHandler(config['LOG']['dir'] + '/video-archival.log', encoding='utf8')
-    video_archival_file_handler.setLevel(level)
-    video_archival_file_handler.setFormatter(VideoArchivalLoggingFormatter())
+    xxHash_file_handler = logging.FileHandler('video-archival.log', encoding='utf8')
+    xxHash_file_handler.setLevel(level)
+    xxHash_file_handler.setFormatter(VideoArchivalLoggingFormatter())
 
-    video_archival.addHandler(video_archival_stdout_handler)
-    video_archival.addHandler(video_archival_file_handler)
+    xxHash.addHandler(xxHash_stdout_handler)
+    xxHash.addHandler(xxHash_file_handler)
 
-    video_archival.newline = types.MethodType(log_newline, video_archival)
+    xxHash.newline = types.MethodType(log_newline, xxHash)
 
-    bagit = logging.getLogger('bagit')
-    bagit.setLevel(logging.WARNING)
-    bagit_stdout_handler = logging.StreamHandler(sys.stdout)
-    bagit_stdout_handler.setLevel(logging.WARNING)
-    bagit_stdout_handler.setFormatter(CustomLoggingFormatter())
+    core = logging.getLogger('core-logging')
+    core.setLevel(logging.WARNING)
+    core_stdout_handler = logging.StreamHandler(sys.stdout)
+    core_stdout_handler.setLevel(logging.WARNING)
+    core_stdout_handler.setFormatter(CustomLoggingFormatter())
 
-    bagit_file_handler = logging.FileHandler('bagit.log')
-    bagit_file_handler.setLevel(logging.WARNING)
-    bagit_file_handler.setFormatter(CustomLoggingFormatter())
+    core_file_handler = logging.FileHandler('core.log')
+    core_file_handler.setLevel(logging.WARNING)
+    core_file_handler.setFormatter(CustomLoggingFormatter())
 
-    bagit.addHandler(bagit_stdout_handler)
-    bagit.addHandler(bagit_file_handler)
+    core.addHandler(core_stdout_handler)
+    core.addHandler(core_file_handler)
