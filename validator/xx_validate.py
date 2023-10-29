@@ -2,14 +2,15 @@
 import os.path
 import repackage
 import argparse
-import logging
 import xxhash
+
 repackage.up()
-from validator.logging_output import logging_output
+from validator.logging import get_logger, get_SMTP_handler
+from validator.definitions import get_config
 from validator.colors import bcolors
 
-
-logger = logging.getLogger('xxHash_logger')
+config = get_config()
+logger = get_logger('xx_hash_logger')
 
 
 def run():
@@ -17,7 +18,6 @@ def run():
     parser.add_argument('path')
     args = parser.parse_args()
 
-    logging_output()
     path = args.path
     valid = True
 
@@ -33,22 +33,19 @@ def run():
             if line.startswith('#') or line.startswith('\n' or '\r'):
                 continue
 
-            checksum = line[0:20]
+            checksum = line[0:20].lstrip().rstrip()
             checksum_path = line[20:].rstrip().lstrip(' \t').lstrip('*')
 
             if checksum and checksum_path:
                 full_checksum_path = os.path.join(path, checksum_path)
-                folder_filename = f'{checksum_path}' if len(path) == len(
-                    path) else f'{path[len(path) + 1:]}/{checksum_path}'
+                folder_filename = f'{checksum_path}' if len(path) == len(path) else f'{path[len(path) + 1:]}/{checksum_path}'
 
                 if os.path.isfile(full_checksum_path):
                     size = os.stat(full_checksum_path).st_size
                     checksums[folder_filename] = (checksum_algo, checksum, folder_filename, size)
                     actual_checksum = xxh3_64_with_chunk(full_checksum_path)
 
-                    print(f'actual_checksum: {actual_checksum}\tchecksum: {checksum}')
-
-                    if actual_checksum != checksum:
+                    if str(actual_checksum) != str(checksum):
                         logger.error('Checksum missmatch: ' + checksum_path)
                         valid = False
                 else:
@@ -56,6 +53,9 @@ def run():
                     valid = False
 
     logger.info(str(len(checksum)) + ' files tested')
+    smtp_handler = get_SMTP_handler()
+    logger.addHandler(smtp_handler)
+
     if valid:
         logger.info(f'{bcolors.SUCCESS}Checksum test is valid! 👍')
     else:
