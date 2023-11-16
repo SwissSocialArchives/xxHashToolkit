@@ -28,7 +28,7 @@ Siehe auch: https://www.codeproject.com/Tips/5255355/How-to-Put-Color-on-Windows
 ## Command line scripts:
 <br>
 
-```validate [--flags]```
+```xx_validate [--flags]```
 <br>
 validiert xxHash3 64-Checksummen (Dateiname: 'manifest-cache-xxh364.txt')
 
@@ -41,7 +41,7 @@ validiert xxHash3 64-Checksummen (Dateiname: 'manifest-cache-xxh364.txt')
 Als erstes Argument muss der Quellordner angegeben werden.<br>
 <br>
  Beispiel:<br>
-validate /Volumes/Sozialarchiv/Sozialarchiv/xxHashTest
+xx_validate /Volumes/Example/xxHashTest
 <br>
 <br>
 
