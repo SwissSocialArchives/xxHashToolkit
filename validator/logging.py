@@ -35,7 +35,7 @@ class CustomLoggingFormatter(logging.Formatter):
 def get_filehandler():
     dest_folder = os.path.basename(os.path.normpath(__main__.sys.argv[1]))
     script = os.path.basename(os.path.normpath(__main__.__file__))
-    datetime_now = datetime.now().strftime("%Y:%m:%d--%H-%M-%S")
+    datetime_now = datetime.now().strftime("%Y-%m-%d--%H-%M-%S")
 
     return logging.FileHandler(config['LOG']['dir'] + f'/{dest_folder}_{datetime_now}__{script}.log',
                                encoding='utf8')
