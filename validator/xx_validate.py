@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import os.path
+import re
+
 import repackage
 import argparse
 import xxhash
@@ -33,8 +35,8 @@ def run():
             if line.startswith('#') or line.startswith('\n' or '\r'):
                 continue
 
-            checksum = line[0:20].lstrip().rstrip()
-            checksum_path = line[20:].rstrip().lstrip(' \t').lstrip('*')
+            pattern = re.compile(r'(\d+) +(.+)')
+            checksum, checksum_path = pattern.split(line)[1:3]
 
             if checksum and checksum_path:
                 full_checksum_path = os.path.join(path, checksum_path)
