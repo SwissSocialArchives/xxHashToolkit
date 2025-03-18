@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os.path
 import re
+from datetime import datetime
+import codecs
 
 import repackage
 import argparse
@@ -16,6 +18,7 @@ logger = get_logger('xx_hash_logger')
 
 
 def run():
+
     parser = argparse.ArgumentParser(description="validate xxHash checksums (file: manifest-cache-xxh364.txt)")
     parser.add_argument('path')
     args = parser.parse_args()
@@ -27,10 +30,11 @@ def run():
         logger.critical('Input path does not exist')
         exit(1)
 
-    checksums = {}
+    tested_checksums = 0
     checksum_algo = 'xxHash3_64'
+    datetime_now = datetime.now().strftime("%Y-%m-%d--%H-%M-%S")
 
-    with open(os.path.join(path, 'manifest-cache-xxh364.txt'), 'r') as content:
+    with open(os.path.join(path, 'manifest-cache-xxh364.txt'), 'r', encoding='utf-8') as content:
         for line in content:
             if line.startswith('#') or line.startswith('\n' or '\r'):
                 continue
@@ -40,28 +44,30 @@ def run():
 
             if checksum and checksum_path:
                 full_checksum_path = os.path.join(path, checksum_path)
-                folder_filename = f'{checksum_path}' if len(path) == len(path) else f'{path[len(path) + 1:]}/{checksum_path}'
 
                 if os.path.isfile(full_checksum_path):
                     size = os.stat(full_checksum_path).st_size
-                    checksums[folder_filename] = (checksum_algo, checksum, folder_filename, size)
                     actual_checksum = xxh3_64_with_chunk(full_checksum_path)
 
                     if str(actual_checksum) != str(checksum):
-                        logger.error('Checksum missmatch: ' + checksum_path)
+                        logger.error('Checksum mismatch: ' + checksum_path)
                         valid = False
+                    else:
+                        tested_checksums += 1
+                        logger.info(f'{datetime_now} ––– success: {checksum_path}')
                 else:
-                    logger.error('Checksum file not found: ' + checksum_path)
+                    logger.error(f'{datetime_now} ––– checksum path not found: {checksum_path}\n')
                     valid = False
 
-    logger.info(str(len(checksum)) + ' files tested')
+
+    logger.info(f'{tested_checksums} files tested.')
     smtp_handler = get_SMTP_handler()
     logger.addHandler(smtp_handler)
 
     if valid:
-        logger.info(f'{bcolors.SUCCESS}Checksum test is valid! 👍')
+        logger.info(f'{bcolors.SUCCESS}Checksum test was successful 👍')
     else:
-        logger.error('Checksum test is not valid! 🙀')
+        logger.error('Checksum test was not successful 🙀')
 
 
 def xxh3_64_with_chunk(filename):
@@ -70,7 +76,6 @@ def xxh3_64_with_chunk(filename):
         while chunk := f.read(8192):
             hash.update(chunk)
     return hash.intdigest()
-
 
 if __name__ == '__main__':
     run()
